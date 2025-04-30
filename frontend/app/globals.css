@@ -1,0 +1,373 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+ 
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+ 
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-black text-foreground;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  .card {
+    @apply p-6 rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--card-border))] shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:transform hover:scale-105 hover:border-[rgb(var(--primary))] hover:border-opacity-50;
+  }
+
+  .button-primary {
+    @apply px-8 py-3 rounded-full bg-[rgb(var(--primary))] text-white font-medium hover:bg-[rgb(var(--primary))]/90 transition-colors shadow-md hover:shadow-lg;
+  }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600 dark:from-blue-400 dark:via-purple-300 dark:to-indigo-400 animate-gradient-x;
+  }
+}
+
+/* Global Styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--muted) / 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--muted) / 0.7);
+}
+
+/* Mouse Trail */
+.cursor-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background-color: rgb(var(--primary));
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+}
+
+.cursor-trail {
+  position: fixed;
+  width: 24px;
+  height: 24px;
+  background-color: rgba(var(--primary), 0.2);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9998;
+}
+
+/* Base styles */
+body {
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+}
+
+/* Page transition animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 1;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animation classes */
+.animate-fade-in {
+  animation: fadeIn 0.5s forwards;
+  opacity: 1 !important;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s forwards;
+  opacity: 1 !important;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s forwards;
+  opacity: 1 !important;
+}
+
+/* Fix animations that might have opacity: 0 */
+[class*="animate-"] {
+  opacity: 1 !important;
+}
+
+/* Ensure items with animation-fill-mode stay visible */
+[style*="animation-fill-mode"] {
+  opacity: 1 !important;
+}
+
+/* Responsive design utilities */
+@media (max-width: 768px) {
+  .card:hover {
+    transform: none;
+  }
+}
+
+/* Smooth transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Card tilt effect */
+.tilt-card {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+/* Loading animation */
+.loading-dots::after {
+  content: '.';
+  animation: dots 1.5s steps(5, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60% { content: '...'; }
+  80%, 100% { content: ''; }
+}
+
+@keyframes gradient-x {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 15s ease infinite;
+}
+
+/* Code editor styling */
+.code-editor {
+  font-family: 'Consolas', 'Monaco', 'Andale Mono', monospace;
+  border-radius: 0.5rem;
+  min-height: 400px;
+}
+
+/* Syntax highlighting themes */
+.light-theme .token.comment,
+.light-theme .token.prolog,
+.light-theme .token.doctype,
+.light-theme .token.cdata {
+  color: #5c6370;
+}
+
+.dark-theme .token.comment,
+.dark-theme .token.prolog,
+.dark-theme .token.doctype,
+.dark-theme .token.cdata {
+  color: #6a9955;
+}
+
+.light-theme .token.punctuation {
+  color: #5c6370;
+}
+
+.dark-theme .token.punctuation {
+  color: #d4d4d4;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol {
+  color: #e06c75;
+}
+
+.dark-theme .token.property,
+.dark-theme .token.tag,
+.dark-theme .token.boolean,
+.dark-theme .token.number,
+.dark-theme .token.constant,
+.dark-theme .token.symbol {
+  color: #5bb8ff;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin {
+  color: #98c379;
+}
+
+.dark-theme .token.selector,
+.dark-theme .token.attr-name,
+.dark-theme .token.string,
+.dark-theme .token.char,
+.dark-theme .token.builtin {
+  color: #ce9178;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #56b6c2;
+}
+
+.token.keyword {
+  color: #c678dd;
+}
+
+.dark-theme .token.keyword {
+  color: #569cd6;
+}
+
+.token.function {
+  color: #61afef;
+}
+
+/* Enhance glass effect */
+.backdrop-blur-sm {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgb(var(--background-end-rgb))
+  )
+  rgb(var(--background-start-rgb));
+  min-height: 100vh;
+}
+
+/* Ensure the galaxy background is visible */
+.fixed.inset-0 {
+  background-color: black !important;
+  z-index: -1;
+}
+
+/* Add a subtle gradient overlay to improve content visibility */
+.relative.z-10 {
+  position: relative;
+  z-index: 10;
+}
+
+/* Ensure cards and other content have proper contrast */
+.bg-white {
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+.dark .bg-gray-800 {
+  background-color: rgba(31, 41, 55, 0.9);
+  backdrop-filter: blur(10px);
+} 

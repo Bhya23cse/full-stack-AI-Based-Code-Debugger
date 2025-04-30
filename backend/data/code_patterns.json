@@ -1,0 +1,156 @@
+{
+  "patterns": {
+    "python": [
+      {
+        "pattern": "\\bprint\\s*\\([^)]*\\)\\s*$",
+        "description": "Missing parentheses in print statement",
+        "severity": "error",
+        "suggestion": "In Python 3, print is a function that requires parentheses.",
+        "example": "print 'Hello World' -> print('Hello World')"
+      },
+      {
+        "pattern": "\\bif\\s+.+\\s*[^:]\\s*$",
+        "description": "Missing colon after if statement",
+        "severity": "error",
+        "suggestion": "Add a colon (:) at the end of the if condition",
+        "example": "if x > 5 -> if x > 5:"
+      },
+      {
+        "pattern": "\\bfor\\s+.+\\s+in\\s+.+\\s*[^:]\\s*$",
+        "description": "Missing colon after for loop",
+        "severity": "error",
+        "suggestion": "Add a colon (:) at the end of the for loop declaration",
+        "example": "for item in items -> for item in items:"
+      },
+      {
+        "pattern": "\\bexcept\\s+Exception\\s+as\\s+\\w+\\s*:",
+        "description": "Too broad exception handling",
+        "severity": "warning",
+        "suggestion": "Catch specific exceptions instead of the generic Exception class",
+        "example": "except Exception as e: -> except (ValueError, TypeError) as e:"
+      },
+      {
+        "pattern": "\\bif\\s+\\w+\\s*==\\s*True\\s*:",
+        "description": "Redundant comparison to True",
+        "severity": "info",
+        "suggestion": "Use 'if condition:' instead of 'if condition == True:'",
+        "example": "if x == True: -> if x:"
+      },
+      {
+        "pattern": "\\bwhile\\s+True\\s*:(?:(?!break).)*$",
+        "description": "Infinite loop without break statement",
+        "severity": "warning",
+        "suggestion": "Ensure there's a break condition to avoid infinite loops",
+        "example": "Add a break statement inside the loop with an appropriate condition"
+      }
+    ],
+    "javascript": [
+      {
+        "pattern": "\\bvar\\b",
+        "description": "Use of 'var' keyword",
+        "severity": "info",
+        "suggestion": "Consider using 'let' or 'const' instead of 'var' for better scoping",
+        "example": "var x = 5; -> const x = 5; or let x = 5;"
+      },
+      {
+        "pattern": "\\b(\\w+\\s*=\\s*\\w+\\s*[+\\-*/]\\s*\\w+)(?!;)",
+        "description": "Missing semicolon after statement",
+        "severity": "warning",
+        "suggestion": "Add a semicolon at the end of the statement",
+        "example": "let x = 5 + 3 -> let x = 5 + 3;"
+      },
+      {
+        "pattern": "console\\.log\\(",
+        "description": "Console.log left in production code",
+        "severity": "info",
+        "suggestion": "Remove or comment out console.log statements in production code",
+        "example": "console.log('Debug') -> // console.log('Debug')"
+      },
+      {
+        "pattern": "===\\s*undefined",
+        "description": "Direct comparison with undefined",
+        "severity": "info",
+        "suggestion": "Use typeof to check for undefined",
+        "example": "if (x === undefined) -> if (typeof x === 'undefined')"
+      },
+      {
+        "pattern": "(?:if|for|while)\\s*\\([^)]*\\)\\s*\\w+\\s*;",
+        "description": "Statement after control structure without braces",
+        "severity": "warning",
+        "suggestion": "Add curly braces {} around the statement for better readability",
+        "example": "if (x > 5) doSomething(); -> if (x > 5) { doSomething(); }"
+      }
+    ],
+    "java": [
+      {
+        "pattern": "\\bSystem\\.out\\.println\\(",
+        "description": "System.out.println in production code",
+        "severity": "info",
+        "suggestion": "Consider using a proper logging framework instead of System.out.println",
+        "example": "System.out.println(\"Debug\"); -> logger.info(\"Debug\");"
+      },
+      {
+        "pattern": "\\bcatch\\s*\\(\\s*Exception\\s+\\w+\\s*\\)",
+        "description": "Catching generic Exception",
+        "severity": "warning",
+        "suggestion": "Catch specific exceptions rather than the generic Exception class",
+        "example": "catch (Exception e) -> catch (IOException e)"
+      },
+      {
+        "pattern": "(?:public|private|protected).*\\s+\\w+\\s*\\(.*\\)\\s*;",
+        "description": "Method declaration ending with semicolon",
+        "severity": "error",
+        "suggestion": "Method declarations should have a body with curly braces, not a semicolon",
+        "example": "public void method(); -> public void method() {}"
+      }
+    ],
+    "cpp": [
+      {
+        "pattern": "using\\s+namespace\\s+std\\s*;",
+        "description": "Using the entire std namespace",
+        "severity": "info",
+        "suggestion": "Import only the specific components you need from std",
+        "example": "using namespace std; -> using std::cout; using std::string;"
+      },
+      {
+        "pattern": "\\w+\\s*=\\s*malloc\\(\\s*sizeof\\(\\w+\\)\\s*\\);",
+        "description": "C-style memory allocation in C++",
+        "severity": "warning",
+        "suggestion": "Use 'new' instead of 'malloc' in C++",
+        "example": "int* ptr = (int*)malloc(sizeof(int)); -> int* ptr = new int;"
+      },
+      {
+        "pattern": "#define\\s+\\w+\\s+\\d+",
+        "description": "Use of #define for constants",
+        "severity": "info",
+        "suggestion": "Use const or constexpr instead of #define for constants in C++",
+        "example": "#define MAX_SIZE 100 -> const int MAX_SIZE = 100;"
+      }
+    ]
+  },
+  "security_checks": {
+    "sql_injection": {
+      "pattern": "\\bexecute\\(.*\\+.*\\)|\\bquery\\(.*\\+.*\\)",
+      "description": "Potential SQL injection vulnerability",
+      "severity": "error",
+      "suggestion": "Use parameterized queries instead of string concatenation",
+      "applies_to": ["python", "javascript", "java"]
+    },
+    "xss": {
+      "pattern": "\\binnerHTML\\s*=|\\bdocument\\.write\\(",
+      "description": "Potential XSS vulnerability",
+      "severity": "error",
+      "suggestion": "Use textContent or sanitize HTML input before using innerHTML",
+      "applies_to": ["javascript"]
+    }
+  },
+  "performance_checks": {
+    "nested_loops": {
+      "pattern": "\\bfor\\s*\\(.*\\)\\s*{[^}]*for\\s*\\(.*\\)|\\bwhile\\s*\\(.*\\)\\s*{[^}]*while\\s*\\(",
+      "description": "Nested loops that may cause performance issues",
+      "severity": "warning",
+      "suggestion": "Consider refactoring or optimizing nested loops for better performance",
+      "applies_to": ["javascript", "java", "cpp", "python"]
+    }
+  }
+} 
