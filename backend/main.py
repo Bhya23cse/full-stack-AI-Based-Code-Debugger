@@ -4,13 +4,34 @@ from pydantic import BaseModel
 import google.generativeai as genai
 from dotenv import load_dotenv
 import os
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
 
+# Get API key from environment
+api_key = os.getenv("GEMINI_API_KEY")
+logger.info(f"Current working directory: {os.getcwd()}")
+logger.info(f"Environment variables: {dict(os.environ)}")
+
+if not api_key:
+    error_msg = "GEMINI_API_KEY not found in environment variables"
+    logger.error(error_msg)
+    raise ValueError(error_msg)
+
 # Configure Gemini API
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel('gemini-pro')
+try:
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel('gemini-1.0-pro')
+    logger.info("Gemini API configured successfully")
+except Exception as e:
+    error_msg = f"Failed to configure Gemini API: {str(e)}"
+    logger.error(error_msg)
+    raise ValueError(error_msg)
 
 app = FastAPI()
 
@@ -30,16 +51,37 @@ class CodeRequest(BaseModel):
 @app.post("/debug")
 async def debug_code(request: CodeRequest):
     try:
+        logger.info(f"Received debug request for {request.language} code")
+        logger.info(f"Code content: {request.code[:100]}...")  # Log first 100 chars of code
+        
         prompt = f"Debug this {request.language} code:\n{request.code}\n\nPlease provide:\n1. Any errors found\n2. Suggested fixes\n3. Best practices recommendations"
         
-        response = model.generate_content(prompt)
-        
-        return {
-            "debug_response": response.text,
-            "status": "success"
-        }
+        try:
+            response = model.generate_content(prompt)
+            if not response or not hasattr(response, 'text'):
+                raise ValueError("Invalid response from Gemini API")
+            
+            debug_response = response.text
+            logger.info("Successfully generated debug response")
+            
+            return {
+                "debug_response": debug_response,
+                "status": "success"
+            }
+        except Exception as api_error:
+            logger.error(f"Gemini API error: {str(api_error)}")
+            return {
+                "debug_response": f"Error from Gemini API: {str(api_error)}",
+                "status": "error"
+            }
+            
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        error_msg = f"Error in debug_code endpoint: {str(e)}"
+        logger.error(error_msg)
+        return {
+            "debug_response": error_msg,
+            "status": "error"
+        }
 
 if __name__ == "__main__":
     import uvicorn

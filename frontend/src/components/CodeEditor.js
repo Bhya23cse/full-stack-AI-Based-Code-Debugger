@@ -7,22 +7,38 @@ const CodeEditor = () => {
   const [language, setLanguage] = useState('javascript');
   const [debugResponse, setDebugResponse] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleEditorChange = (value) => {
     setCode(value);
+    setError(''); // Clear error when code changes
   };
 
   const handleDebug = async () => {
+    if (!code.trim()) {
+      setError('Please enter some code to debug');
+      return;
+    }
+
     try {
       setLoading(true);
+      setError('');
       const response = await axios.post('http://localhost:8000/debug', {
         code,
         language
       });
-      setDebugResponse(response.data.debug_response);
+      
+      if (response.data.status === 'error') {
+        setError(response.data.debug_response);
+        setDebugResponse('');
+      } else {
+        setDebugResponse(response.data.debug_response);
+        setError('');
+      }
     } catch (error) {
       console.error('Error debugging code:', error);
-      setDebugResponse('Error occurred while debugging the code.');
+      setError(error.response?.data?.debug_response || 'Error occurred while debugging the code.');
+      setDebugResponse('');
     } finally {
       setLoading(false);
     }
@@ -60,17 +76,26 @@ const CodeEditor = () => {
         
         <button 
           onClick={handleDebug} 
-          disabled={loading}
+          disabled={loading || !code.trim()}
           className="debug-button"
         >
           {loading ? 'Debugging...' : 'Debug Code'}
         </button>
       </div>
 
-      <div className="debug-output">
-        <h3>Debug Results:</h3>
-        <pre>{debugResponse}</pre>
-      </div>
+      {error && (
+        <div className="error-message">
+          <h3>Error:</h3>
+          <pre>{error}</pre>
+        </div>
+      )}
+
+      {debugResponse && (
+        <div className="debug-output">
+          <h3>Debug Results:</h3>
+          <pre>{debugResponse}</pre>
+        </div>
+      )}
     </div>
   );
 };

@@ -114,3 +114,23 @@ main {
     transform: rotate(360deg);
   }
 }
+
+.error-message {
+  background-color: #2d1e1e;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.error-message h3 {
+  color: #ff6b6b;
+  margin-top: 0;
+}
+
+.error-message pre {
+  color: #ff9e9e;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: 1.5;
+}
