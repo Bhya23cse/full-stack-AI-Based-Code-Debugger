@@ -1,7 +1,10 @@
+html {
+  contain: size;
+}
 .App {
-  text-align: center;
+  /* text-align: center; */
   min-height: 100vh;
-  background-color: #282c34;
+  background-color: #000000;
   color: white;
 }
 
@@ -24,8 +27,11 @@
 .App-header h1 {
   margin: 0;
   font-size: 2.5rem;
-  color: #61dafb;
-}
+  font-family: Arial,Helvetica, sans-serif;
+  background: linear-gradient(to right, #a20808, #11fa21,#001df7, #c0d600);
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  }
 
 .App-header p {
   margin: 10px 0 0;
@@ -33,9 +39,9 @@
 }
 
 main {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 20px 8px
+  /* max-width: 1200px; */
+  
 }
 
 .code-editor-container {
@@ -74,7 +80,7 @@ main {
 }
 
 .debug-button:hover {
-  background-color: #4fa8c7;
+  background-color: #0983da;
 }
 
 .debug-button:disabled {
@@ -134,3 +140,9 @@ main {
   word-wrap: break-word;
   line-height: 1.5;
 }
+.App-footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #030c20;
+}
+
