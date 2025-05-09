@@ -31,7 +31,8 @@ html {
   background: linear-gradient(to right, #a20808, #11fa21,#001df7, #c0d600);
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
-  }
+  background-clip: text;
+}
 
 .App-header p {
   margin: 10px 0 0;

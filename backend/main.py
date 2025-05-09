@@ -5,6 +5,7 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 import logging
+from markdown import markdown
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -15,8 +16,10 @@ load_dotenv()
 
 # Get API key from environment
 api_key = os.getenv("GEMINI_API_KEY")
+
 logger.info(f"Current working directory: {os.getcwd()}")
-logger.info(f"Environment variables: {dict(os.environ)}")
+dict(os.environ)
+#logger.info(f"Environment variables: {dict(os.environ)}")
 
 if not api_key:
     error_msg = "GEMINI_API_KEY not found in environment variables"
@@ -62,8 +65,9 @@ async def debug_code(request: CodeRequest):
             if not response or not hasattr(response, 'text'):
                 raise ValueError("Invalid response from Gemini API")
             
-            debug_response = response.text
+            debug_response = markdown(response.text)
             logger.info("Successfully generated debug response")
+            print(debug_response)
             
             return {
                 "debug_response": debug_response,

@@ -103,11 +103,10 @@ const CodeEditor = () => {
       <style>
         {`
           .placeholder-text {
-            color: #00ff00 !important; /* green */
+            color:rgb(124, 124, 124) !important; /* green */
             font-style: italic;
           }
-        `}
-      </style>
+        `}      </style>
 
       <div className="editor-section">
         <select
