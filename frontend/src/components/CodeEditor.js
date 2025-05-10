@@ -8,6 +8,8 @@ const CodeEditor = () => {
   const [debugResponse, setDebugResponse] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [debugHistory, setDebugHistory] = useState([]);
   const editorRef = useRef(null);
   const placeholder = 'Type or paste your code here to debug...';
   const decorationIdsRef = useRef([]);
@@ -76,6 +78,17 @@ const CodeEditor = () => {
         language,
       });
 
+      // Add to history
+      const historyItem = {
+        id: Date.now(),
+        timestamp: new Date().toLocaleString(),
+        language,
+        code: cleanCode,
+        response: response.data.debug_response,
+        error: response.data.status === 'error' ? response.data.debug_response : null
+      };
+      setDebugHistory(prev => [historyItem, ...prev]);
+
       if (response.data.status === 'error') {
         setError(response.data.debug_response);
         setDebugResponse('');
@@ -85,14 +98,29 @@ const CodeEditor = () => {
       }
     } catch (error) {
       console.error('Error debugging code:', error);
-      setError(
-        error.response?.data?.debug_response ||
-          'Error occurred while debugging the code.'
-      );
+      const errorMessage = error.response?.data?.debug_response || 'Error occurred while debugging the code.';
+      setError(errorMessage);
       setDebugResponse('');
+      
+      // Add error to history
+      const historyItem = {
+        id: Date.now(),
+        timestamp: new Date().toLocaleString(),
+        language,
+        code: cleanCode,
+        error: errorMessage
+      };
+      setDebugHistory(prev => [historyItem, ...prev]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadHistoryItem = (item) => {
+    setCode(item.code);
+    setLanguage(item.language);
+    setDebugResponse(item.response || '');
+    setError(item.error || '');
   };
 
   return (
@@ -100,62 +128,97 @@ const CodeEditor = () => {
       <style>
         {`
           .placeholder-text {
-            color:rgb(124, 124, 124) !important; /* green */
+            color:rgb(124, 124, 124) !important;
             font-style: italic;
           }
-        `}      </style>
+        `}
+      </style>
 
-      <div className="editor-section">
-        <select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          className="language-selector"
-        >
-          <option value="javascript">JavaScript</option>
-          <option value="python">Python</option>
-          <option value="java">Java</option>
-          <option value="cpp">C++</option>
-        </select>
-
-        <Editor
-          height="300px"
-          defaultLanguage={language}
-          value={code}
-          onChange={handleEditorChange}
-          onMount={handleEditorMount}
-          theme="vs-dark"
-          options={{
-            minimap: { enabled: true },
-            fontSize: 14,
-            lineNumbers: 'on',
-            roundedSelection: false,
-            scrollBeyondLastLine: false,
-            automaticLayout: true,
-          }}
-        />
-
-        <button
-          onClick={handleDebug}
-          disabled={loading || !code.trim() || code === placeholder}
-          className="debug-button"
-        >
-          {loading ? 'Debugging...' : 'Debug Code'}
-        </button>
+      <div className={`history-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+        <div className="sidebar-header">
+          <h3>Debug History</h3>
+        </div>
+        {debugHistory.length === 0 ? (
+          <div className="no-history">No debug history yet</div>
+        ) : (
+          debugHistory.map(item => (
+            <div 
+              key={item.id} 
+              className="history-item"
+              onClick={() => loadHistoryItem(item)}
+            >
+              <div className="timestamp">{item.timestamp}</div>
+              <div className="language">{item.language}</div>
+              <div className="code-preview">{item.code}</div>
+            </div>
+          ))
+        )}
       </div>
 
-      {error && (
-        <div className="error-message">
-          <h3>Error:</h3>
-          <pre>{error}</pre>
-        </div>
-      )}
+      <button 
+        className="sidebar-toggle"
+        onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        title={isSidebarCollapsed ? "Show History" : "Hide History"}
+      >
+        {isSidebarCollapsed ? '→' : '←'}
+      </button>
 
-      {debugResponse && (
-        <div className="debug-output">
-          <h3>Debug Results:</h3>
-          <pre>{debugResponse}</pre>
+      <div className="main-content">
+        <div className="editor-section">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="language-selector"
+          >
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="java">Java</option>
+            <option value="cpp">C++</option>
+          </select>
+
+          <Editor
+            height="300px"
+            defaultLanguage={language}
+            value={code}
+            onChange={handleEditorChange}
+            onMount={handleEditorMount}
+            theme="vs-dark"
+            options={{
+              minimap: { enabled: true },
+              fontSize: 14,
+              lineNumbers: 'on',
+              roundedSelection: false,
+              scrollBeyondLastLine: false,
+              automaticLayout: true,
+            }}
+          />
+
+          <button
+            onClick={handleDebug}
+            disabled={loading || !code.trim() || code === placeholder}
+            className="debug-button"
+          >
+            {loading ? 'Debugging...' : 'Debug Code'}
+          </button>
         </div>
-      )}
+
+        {error && (
+          <div className="error-message">
+            <h3>Error:</h3>
+            <pre>{error}</pre>
+          </div>
+        )}
+
+        {debugResponse && (
+          <div className="debug-output">
+            <h3>Debug Results:</h3>
+            <div 
+              className="debug-content"
+              dangerouslySetInnerHTML={{ __html: debugResponse }}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

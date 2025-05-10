@@ -67,7 +67,7 @@ async def debug_code(request: CodeRequest):
             
             debug_response = markdown(response.text)
             logger.info("Successfully generated debug response")
-            print(debug_response)
+            # print(debug_response)
             
             return {
                 "debug_response": debug_response,
