@@ -1,11 +1,9 @@
-html {
-  contain: size;
-}
+
 .App {
   /* text-align: center; */
-  min-height: 100vh;
   background-color: #000000;
   color: white;
+  width: ;
 }
 
 .App-logo {
@@ -40,9 +38,12 @@ html {
 }
 
 main {
-  padding: 20px 8px
-  /* max-width: 1200px; */
-  
+  padding: 20px 8px;
+  /* max-width: 1200px; */  
+  display: inline-block;
+  background-color: #000000;
+  margin-top: 20px;
+  width: 100%;
 }
 
 .code-editor-container {
@@ -54,7 +55,7 @@ main {
 
 .editor-section {
   background-color: #1e1e1e;
-  padding: 20px;
+  padding: 28px 22px 50px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -69,7 +70,7 @@ main {
 }
 
 .debug-button {
-  margin-top: 15px;
+  margin-top: 113px;
   padding: 10px 20px;
   background-color: #61dafb;
   color: #282c34;
@@ -145,5 +146,8 @@ main {
   text-align: center;
   padding: 20px;
   background-color: #030c20;
+}
+.output-container {
+  width: 50%;
 }
 

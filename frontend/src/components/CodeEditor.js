@@ -9,18 +9,15 @@ const CodeEditor = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const editorRef = useRef(null);
-  const [isPlaceholderVisible, setIsPlaceholderVisible] = useState(true);
   const placeholder = 'Type or paste your code here to debug...';
   const decorationIdsRef = useRef([]);
 
   const handleEditorChange = (value) => {
     setCode(value);
     setError('');
-    setIsPlaceholderVisible(value.trim() === '' || value === placeholder);
   };
 
   const applyPlaceholderDecoration = (editor) => {
-    const model = editor.getModel();
     decorationIdsRef.current = editor.deltaDecorations([], [
       {
         range: new window.monaco.Range(1, 1, 1, placeholder.length + 1),
