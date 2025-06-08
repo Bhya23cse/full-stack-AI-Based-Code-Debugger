@@ -1,33 +1,36 @@
-import React, { useState, useRef } from 'react';
-import Editor from '@monaco-editor/react';
-import axios from 'axios';
+import React, { useState, useRef } from "react";
+import Editor from "@monaco-editor/react";
+import axios from "axios";
 
 const CodeEditor = () => {
-  const [code, setCode] = useState('');
-  const [language, setLanguage] = useState('javascript');
-  const [debugResponse, setDebugResponse] = useState('');
+  const [code, setCode] = useState("");
+  const [language, setLanguage] = useState("javascript");
+  const [debugResponse, setDebugResponse] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [debugHistory, setDebugHistory] = useState([]);
   const editorRef = useRef(null);
-  const placeholder = 'Type or paste your code here to debug...';
+  const placeholder = "Type or paste your code here to debug...";
   const decorationIdsRef = useRef([]);
 
   const handleEditorChange = (value) => {
     setCode(value);
-    setError('');
+    setError("");
   };
 
   const applyPlaceholderDecoration = (editor) => {
-    decorationIdsRef.current = editor.deltaDecorations([], [
-      {
-        range: new window.monaco.Range(1, 1, 1, placeholder.length + 1),
-        options: {
-          inlineClassName: 'placeholder-text',
+    decorationIdsRef.current = editor.deltaDecorations(
+      [],
+      [
+        {
+          range: new window.monaco.Range(1, 1, 1, placeholder.length + 1),
+          options: {
+            inlineClassName: "placeholder-text",
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const removePlaceholderDecoration = (editor) => {
@@ -38,7 +41,7 @@ const CodeEditor = () => {
     editorRef.current = editor;
     const model = editor.getModel();
 
-    if (!code && model.getValue() === '') {
+    if (!code && model.getValue() === "") {
       model.setValue(placeholder);
       setCode(placeholder);
       applyPlaceholderDecoration(editor);
@@ -47,13 +50,13 @@ const CodeEditor = () => {
 
     editor.onDidFocusEditorText(() => {
       if (model.getValue() === placeholder) {
-        model.setValue('');
+        model.setValue("");
         removePlaceholderDecoration(editor);
       }
     });
 
     editor.onDidBlurEditorText(() => {
-      if (model.getValue().trim() === '') {
+      if (model.getValue().trim() === "") {
         model.setValue(placeholder);
         setCode(placeholder);
         applyPlaceholderDecoration(editor);
@@ -63,17 +66,17 @@ const CodeEditor = () => {
   };
 
   const handleDebug = async () => {
-    const cleanCode = code.trim() === placeholder ? '' : code.trim();
+    const cleanCode = code.trim() === placeholder ? "" : code.trim();
 
     if (!cleanCode) {
-      setError('Please enter some code to debug');
+      setError("Please enter some code to debug");
       return;
     }
 
     try {
       setLoading(true);
-      setError('');
-      const response = await axios.post('http://localhost:8000/debug', {
+      setError("");
+      const response = await axios.post("http://localhost:8000/debug", {
         code: cleanCode,
         language,
       });
@@ -85,32 +88,37 @@ const CodeEditor = () => {
         language,
         code: cleanCode,
         response: response.data.debug_response,
-        error: response.data.status === 'error' ? response.data.debug_response : null
+        error:
+          response.data.status === "error"
+            ? response.data.debug_response
+            : null,
       };
-      setDebugHistory(prev => [historyItem, ...prev]);
+      setDebugHistory((prev) => [historyItem, ...prev]);
 
-      if (response.data.status === 'error') {
+      if (response.data.status === "error") {
         setError(response.data.debug_response);
-        setDebugResponse('');
+        setDebugResponse("");
       } else {
         setDebugResponse(response.data.debug_response);
-        setError('');
+        setError("");
       }
     } catch (error) {
-      console.error('Error debugging code:', error);
-      const errorMessage = error.response?.data?.debug_response || 'Error occurred while debugging the code.';
+      console.error("Error debugging code:", error);
+      const errorMessage =
+        error.response?.data?.debug_response ||
+        "Error occurred while debugging the code.";
       setError(errorMessage);
-      setDebugResponse('');
-      
+      setDebugResponse("");
+
       // Add error to history
       const historyItem = {
         id: Date.now(),
         timestamp: new Date().toLocaleString(),
         language,
         code: cleanCode,
-        error: errorMessage
+        error: errorMessage,
       };
-      setDebugHistory(prev => [historyItem, ...prev]);
+      setDebugHistory((prev) => [historyItem, ...prev]);
     } finally {
       setLoading(false);
     }
@@ -119,8 +127,8 @@ const CodeEditor = () => {
   const loadHistoryItem = (item) => {
     setCode(item.code);
     setLanguage(item.language);
-    setDebugResponse(item.response || '');
-    setError(item.error || '');
+    setDebugResponse(item.response || "");
+    setError(item.error || "");
   };
 
   return (
@@ -134,16 +142,18 @@ const CodeEditor = () => {
         `}
       </style>
 
-      <div className={`history-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+      <div
+        className={`history-sidebar ${isSidebarCollapsed ? "collapsed" : ""}`}
+      >
         <div className="sidebar-header">
           <h3>Debug History</h3>
         </div>
         {debugHistory.length === 0 ? (
           <div className="no-history">No debug history yet</div>
         ) : (
-          debugHistory.map(item => (
-            <div 
-              key={item.id} 
+          debugHistory.map((item) => (
+            <div
+              key={item.id}
               className="history-item"
               onClick={() => loadHistoryItem(item)}
             >
@@ -155,15 +165,32 @@ const CodeEditor = () => {
         )}
       </div>
 
-      <button 
+      <button
         className="sidebar-toggle"
         onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         title={isSidebarCollapsed ? "Show History" : "Hide History"}
       >
-        {isSidebarCollapsed ? '→' : '←'}
+        {isSidebarCollapsed ? "→" : "←"}
       </button>
 
       <div className="main-content">
+        {error && (
+          <div className="error-message">
+            <h3>Error:</h3>
+            <pre>{error}</pre>
+          </div>
+        )}
+
+        {debugResponse && (
+          <div className="debug-output">
+            <h3>Debug Results:</h3>
+            <div
+              className="debug-content"
+              dangerouslySetInnerHTML={{ __html: debugResponse }}
+            />
+          </div>
+        )}
+
         <div className="editor-section">
           <select
             value={language}
@@ -175,7 +202,7 @@ const CodeEditor = () => {
             <option value="java">Java</option>
             <option value="cpp">C++</option>
           </select>
-
+        
           <Editor
             height="300px"
             defaultLanguage={language}
@@ -186,7 +213,7 @@ const CodeEditor = () => {
             options={{
               minimap: { enabled: true },
               fontSize: 14,
-              lineNumbers: 'on',
+              lineNumbers: "on",
               roundedSelection: false,
               scrollBeyondLastLine: false,
               automaticLayout: true,
@@ -198,26 +225,9 @@ const CodeEditor = () => {
             disabled={loading || !code.trim() || code === placeholder}
             className="debug-button"
           >
-            {loading ? 'Debugging...' : 'Debug Code'}
+            {loading ? "Debugging..." : "Debug Code"}
           </button>
         </div>
-
-        {error && (
-          <div className="error-message">
-            <h3>Error:</h3>
-            <pre>{error}</pre>
-          </div>
-        )}
-
-        {debugResponse && (
-          <div className="debug-output">
-            <h3>Debug Results:</h3>
-            <div 
-              className="debug-content"
-              dangerouslySetInnerHTML={{ __html: debugResponse }}
-            />
-          </div>
-        )}
       </div>
     </div>
   );
