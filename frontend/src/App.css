@@ -262,10 +262,11 @@ body {
 
 .main-content {
   width: 100%;
+
 }
 
 .editor-section {
-  position: relative;
+  position: fixed;
   background-color: #1e1e1e;
   padding: clamp(0.5rem, 2vw, 1.5rem);
   border-radius: clamp(0.5rem, 1vw, 1rem);
